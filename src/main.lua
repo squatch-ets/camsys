@@ -36,11 +36,13 @@ local trigger = require("lib.trigger")
 local camera = require("lib.camera")
 local nfs = require("lib.nativefs")
 local assets = require("lib.assetloader")
+local idletimer = require("lib.idletimer")
 local STATES = _G.STATES
 
 -- SCREEN MODE INFO
 local screenWidth, screenHeight, desktopFlags = love.window.getMode()
 local screenCanvas
+local idleCapture = 0
 
 ---Similar to sleep
 local function wait( num )
@@ -48,7 +50,7 @@ local function wait( num )
 	repeat until os.time() > ntime
 end
 
----Calles ONCE at program startup.
+---Called ONCE at program startup.
 function love.load()
 	if not (desktopFlags.fullscreen) then love.window.setMode(screenWidth, screenHeight, {fullscreen = true}) end
 
@@ -69,16 +71,23 @@ function love.update(dt)
 	if (assets.imageMode) then state:setState(STATES.IDLEIMAGE) end
 
 	--Idle Image and Idle Video State
-	if (state:getState() == STATES.IDLEVIDEO or state:getState() == STATES.IDLEIMAGE) then trigger:update()
+	if (state:getState() == STATES.IDLEVIDEO or state:getState() == STATES.IDLEIMAGE) then
+		trigger:update()
+		idleCapture = idletimer:update(dt)
 
 	--Idle Video State (only ran if imageMode is false)
-	elseif (state:getState() == STATES.IDLEVIDEO) then assets:updateVideo()
+	elseif (state:getState() == STATES.IDLEVIDEO) then
+		assets:updateVideo()
+		idleCapture = idletimer:update(dt)
 
 	--Camera Wait State
 	elseif (state:getState() == STATES.CAMERAWAIT) then
 		wait(20) -- seconds
 		state:setState(STATES.IDLEVIDEO)
 	end
+
+	--Keep camera from going into standby
+	if (idleCapture == 1) then trigger:gotSignal() end
 end
 
 --Called every frame after update()
