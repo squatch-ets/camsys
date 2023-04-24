@@ -34,8 +34,8 @@
 local state = require("lib.state")
 local trigger = require("lib.trigger")
 local camera = require("lib.camera")
-local nfs = require("lib.nativefs")
-local assets = require("lib.assetloader")
+local nativefs = require("lib.nativefs")
+local assetloader = require("lib.assetloader")
 local idletimer = require("lib.idletimer")
 local STATES = _G.STATES
 
@@ -57,10 +57,10 @@ function love.load()
 	love.mouse.setVisible(false)
 	trigger:load()
 	trigger.gotSignal = function () camera:capture() end
-	camera:setSavePath(nfs.getWorkingDirectory())
-	assets:loadIdleImage()
-	assets:loadCameraImage()
-	assets:loadVideoStream()
+	camera:setSavePath(nativefs.getWorkingDirectory())
+	assetloader:loadIdleImage()
+	assetloader:loadCameraImage()
+	assetloader:loadVideoStream()
 	state:setState(STATES.IDLEVIDEO)
 	screenCanvas = love.graphics.newCanvas(screenWidth, screenHeight)
 end
@@ -68,7 +68,7 @@ end
 -- Called every frame before rendering to screen
 function love.update(dt)
 
-	if (assets.imageMode) then state:setState(STATES.IDLEIMAGE) end
+	if (assetloader.imageMode) then state:setState(STATES.IDLEIMAGE) end
 
 	--Idle Image and Idle Video State
 	if (state:getState() == STATES.IDLEVIDEO or state:getState() == STATES.IDLEIMAGE) then
@@ -77,12 +77,13 @@ function love.update(dt)
 
 	--Idle Video State (only ran if imageMode is false)
 	elseif (state:getState() == STATES.IDLEVIDEO) then
-		assets:updateVideo()
+		assetloader:updateVideo()
 		idleCapture = idletimer:update(dt)
 
 	--Camera Wait State
 	elseif (state:getState() == STATES.CAMERAWAIT) then
 		wait(20) -- seconds
+		idleCapture = 0
 		state:setState(STATES.IDLEVIDEO)
 	end
 
@@ -100,26 +101,26 @@ function love.draw()
 	-- IDLE IMAGE STATE
 	if (state:getState() == STATES.IDLEIMAGE) then
 
-		local sx, sy = assets.scaleAsset(assets.idleImage, screenCanvas)
-		love.graphics.draw(assets.idleImage, 0, 0, 0, sx, sy)
+		local sx, sy = assetloader.scaleAsset(assetloader.idleImage, screenCanvas)
+		love.graphics.draw(assetloader.idleImage, 0, 0, 0, sx, sy)
 
 	-- IDLE VIDEO STATE
 	elseif (state:getState() == STATES.IDLEVIDEO) then
 
-		assets:checkIdleVideo()
+		assetloader:checkIdleVideo()
 
-		if not (assets:checkVideoPlayback()) then assets.videoIdle:play() end
+		if not (assetloader:checkVideoPlayback()) then assetloader.videoIdle:play() end
 
-		local sx, sy = assets.scaleAsset(assets.videoIdle, screenCanvas)
-		love.graphics.draw(assets.videoIdle, 0, 0, 0, sx, sy)
+		local sx, sy = assetloader.scaleAsset(assetloader.videoIdle, screenCanvas)
+		love.graphics.draw(assetloader.videoIdle, 0, 0, 0, sx, sy)
 
 	-- CAMERA CAPTURE STATE
-	elseif (state:getState() == STATES.CAMERAIMAGE) then
+	elseif (state:getState() == STATES.CAMERACAPTURE) then
 
-		if (assets:checkVideoPlayback()) then assets:stopVideoPlayback() end
+		if (assetloader:checkVideoPlayback()) then assetloader:stopVideoPlayback() end
 
-		local sx, sy = assets.scaleAsset(assets.cameraImage, screenCanvas)
-		love.graphics.draw(assets.cameraImage, 0, 0, 0, sx, sy)
+		local sx, sy = assetloader.scaleAsset(assetloader.cameraImage, screenCanvas)
+		love.graphics.draw(assetloader.cameraImage, 0, 0, 0, sx, sy)
 
 		if not (state:getState() == STATES.CAMERAWAIT) then state:setState(STATES.CAMERAWAIT) end
 	end

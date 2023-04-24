@@ -4,6 +4,11 @@ idletimer.MAXCOUNT = 15*60
 idletimer.count = 0
 local basetimer = 0
 
+function idletimer:reset()
+   basetimer = 0
+   self.count = 0
+end
+
 function idletimer:update(dt)
    basetimer = basetimer + dt
    self.count = math.floor(basetimer)

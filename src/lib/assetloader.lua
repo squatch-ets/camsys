@@ -29,17 +29,17 @@ function assetloader:stopVideoPlayback()
 end
 
 function assetloader:loadIdleImage()
-	if (nfs.newFile("idle_image.jpg")) then
-		self.idleImage = love.graphics.newImage("idle_image.jpg")
-	end
+	self.idleImage = love.graphics.newImage("idle_image.jpg")
 end
 
 function assetloader:loadCameraImage()
-	self.cameraImage = love.graphics.newImage(nfs.getWorkingDirectory().."/camsys/lua/DSC_0001.jpg")
+	self.cameraImage = love.graphics.newImage("/camsys/lua/DSC_0001.jpg")
 end
 
 function assetloader:loadVideoStream()
-	if (nfs.newFile("idle_video.ogv")) then
+	local _, errmsg = nfs.newFile("idle_video.ogv")
+
+	if (errmsg == 0) then
 		self.videoIdleStream = love.video.newVideoStream("idle_video.ogv")
 	else
 		self.imageMode = true

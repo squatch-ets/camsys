@@ -1,5 +1,6 @@
 local STATES = _G.STATES
 local state = require("lib.state")
+local assetloader = require("lib.assetloader")
 
 ---@class camera
 local camera = {}
@@ -17,7 +18,8 @@ function camera:capture()
         print("Image was not taken!")
         state:setState(STATES.IDLEVIDEO)
     else
-        state:setState(STATES.CAMERAWAIT)
+        assetloader:loadCameraImage()
+        state:setState(STATES.CAMERACAPTURE)
     end
 end
 
