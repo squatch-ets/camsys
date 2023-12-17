@@ -7,7 +7,7 @@ local periphery = require("periphery")
 local GPIO = periphery.GPIO
 
 -- GPIO Config Information
----@type table<string, string|number|boolean|nil>
+---@type table
 local CHIP_INFO = {
 	path = "/dev/gpiochip0",
 	line = 4,

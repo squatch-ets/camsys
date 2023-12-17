@@ -45,18 +45,18 @@ local screenCanvas
 local idleCapture = 0
 
 ---Similar to sleep
-local function wait( num )
+local function wait(num)
 	local ntime = os.time() + num
 	repeat until os.time() > ntime
 end
 
 ---Called ONCE at program startup.
 function love.load()
-	if not (desktopFlags.fullscreen) then love.window.setMode(screenWidth, screenHeight, {fullscreen = true}) end
+	if not (desktopFlags.fullscreen) then love.window.setMode(screenWidth, screenHeight, { fullscreen = true }) end
 
 	love.mouse.setVisible(false)
 	trigger:load()
-	trigger.gotSignal = function () camera:capture() end
+	trigger.gotSignal = function() camera:capture() end
 	camera:setSavePath(nativefs.getWorkingDirectory())
 	assetloader:loadIdleImage()
 	assetloader:loadCameraImage()
@@ -67,7 +67,6 @@ end
 
 -- Called every frame before rendering to screen
 function love.update(dt)
-
 	if (assetloader.imageMode) then state:setState(STATES.IDLEIMAGE) end
 
 	--Idle Image and Idle Video State
@@ -75,15 +74,16 @@ function love.update(dt)
 		trigger:update()
 		idleCapture = idletimer:update(dt)
 
-	--Idle Video State (only ran if imageMode is false)
+		--Idle Video State (only ran if imageMode is false)
 	elseif (state:getState() == STATES.IDLEVIDEO) then
 		assetloader:updateVideo()
 		idleCapture = idletimer:update(dt)
 
-	--Camera Wait State
+		--Camera Wait State
 	elseif (state:getState() == STATES.CAMERAWAIT) then
 		wait(20) -- seconds
 		idleCapture = 0
+		idletimer:reset()
 		state:setState(STATES.IDLEVIDEO)
 	end
 
@@ -93,20 +93,18 @@ end
 
 --Called every frame after update()
 function love.draw()
-	local screenW,screenH = love.graphics.getDimensions()
-	local canvasW,canvasH = screenCanvas:getDimensions()
+	local screenW, screenH = love.graphics.getDimensions()
+	local canvasW, canvasH = screenCanvas:getDimensions()
 
 	love.graphics.setCanvas(screenCanvas)
 
 	-- IDLE IMAGE STATE
 	if (state:getState() == STATES.IDLEIMAGE) then
-
 		local sx, sy = assetloader.scaleAsset(assetloader.idleImage, screenCanvas)
 		love.graphics.draw(assetloader.idleImage, 0, 0, 0, sx, sy)
 
-	-- IDLE VIDEO STATE
+		-- IDLE VIDEO STATE
 	elseif (state:getState() == STATES.IDLEVIDEO) then
-
 		assetloader:checkIdleVideo()
 
 		if not (assetloader:checkVideoPlayback()) then assetloader.videoIdle:play() end
@@ -114,9 +112,8 @@ function love.draw()
 		local sx, sy = assetloader.scaleAsset(assetloader.videoIdle, screenCanvas)
 		love.graphics.draw(assetloader.videoIdle, 0, 0, 0, sx, sy)
 
-	-- CAMERA CAPTURE STATE
+		-- CAMERA CAPTURE STATE
 	elseif (state:getState() == STATES.CAMERACAPTURE) then
-
 		if (assetloader:checkVideoPlayback()) then assetloader:stopVideoPlayback() end
 
 		local sx, sy = assetloader.scaleAsset(assetloader.cameraImage, screenCanvas)
@@ -126,10 +123,10 @@ function love.draw()
 	end
 
 	love.graphics.setCanvas()
-	local scale = math.min(screenW/canvasW , screenH/canvasH)
+	local scale = math.min(screenW / canvasW, screenH / canvasH)
 
 	love.graphics.push()
-	love.graphics.translate(math.floor((screenW - canvasW * scale)/2) , math.floor((screenH - canvasH * scale)/2))
+	love.graphics.translate(math.floor((screenW - canvasW * scale) / 2), math.floor((screenH - canvasH * scale) / 2))
 	love.graphics.scale(scale, scale)
 	love.graphics.draw(screenCanvas)
 	love.graphics.pop()
@@ -137,12 +134,13 @@ end
 
 -- Handles Keyboard Events
 function love.keyreleased(key)
-
 	-- Pause Key Closes the program
 	if (key == "pause") then
 		trigger:close()
 		love.event.quit()
 
-	-- Spacebar Forces the Camera Trigger State
-	elseif (key == "space") then trigger:gotSignal() end
+		-- Spacebar Forces the Camera Trigger State
+	elseif (key == "space") then
+		trigger:gotSignal()
+	end
 end

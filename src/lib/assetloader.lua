@@ -33,6 +33,7 @@ function assetloader:loadIdleImage()
 end
 
 function assetloader:loadCameraImage()
+	if not (self.cameraImage == nil) then self.cameraImage:release() end
 	self.cameraImage = love.graphics.newImage("/camsys/lua/DSC_0001.jpg")
 end
 
