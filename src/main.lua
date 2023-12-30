@@ -31,18 +31,18 @@
 ]]
 
 -- REQUIREMENTS
-local state = require("lib.state")
-local trigger = require("lib.trigger")
-local camera = require("lib.camera")
+local state = require("lib.state") ---@type state
+local trigger = require("lib.trigger") ---@type trigger
+local camera = require("lib.camera") ---@type camera
 local nativefs = require("lib.nativefs")
-local assetloader = require("lib.assetloader")
-local idletimer = require("lib.idletimer")
+local assetloader = require("lib.assetloader") ---@type assetloader
+local idletimer = require("lib.idletimer") ---@type idletimer
 local STATES = _G.STATES
 
 -- SCREEN MODE INFO
 local screenWidth, screenHeight, desktopFlags = love.window.getMode()
-local screenCanvas
-local idleCapture = 0
+local screenCanvas ---@type love.Canvas
+local idleCapture = 0 ---@type number
 
 ---Similar to sleep
 local function wait(num)
@@ -56,7 +56,11 @@ function love.load()
 
 	love.mouse.setVisible(false)
 	trigger:load()
-	trigger.gotSignal = function() camera:capture() end
+	---@diagnostic disable-next-line:duplicate-set-field
+	trigger.gotSignal = function()
+		wait(10)
+		camera:capture()
+	end
 	camera:setSavePath(nativefs.getWorkingDirectory())
 	assetloader:loadIdleImage()
 	assetloader:loadCameraImage()

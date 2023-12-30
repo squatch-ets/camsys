@@ -21,6 +21,7 @@ local CHIP_INFO = {
 
 
 ---@class trigger
+---@field pin table
 local trigger = {}
 
 ---Load Event Handler
