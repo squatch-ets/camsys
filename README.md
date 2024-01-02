@@ -11,7 +11,7 @@ Camsys is a script for Raspberry Pi linux systems using the love2d framework.
 
 ## LICENSE
 
-  Author: brandon.burnette@squatchets.com 2023
+  Author: Brandon Burnette 2023
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy of
 	this software and associated documentation files (the "Software"), to deal in
