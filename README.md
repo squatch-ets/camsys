@@ -1,5 +1,9 @@
 ## DESCRIPTION:
-Camsys is a script for Raspberry Pi linux systems using the love2d framework.
+	Camsys is a script for Raspberry Pi linux systems using the love2d framework.
+	This program displays an Image or Loopable Video to a display until a signal is
+	received on the GPIO. This signal triggers a camera via USB to take a picture
+ 	which is then displayed on screen for 20 seconds before returning to the Image
+  	or Loopable Video.
 
 ## DEPENDENCIES:
 	- gphoto2: install on your linux environment using apt-get
@@ -9,7 +13,7 @@ Camsys is a script for Raspberry Pi linux systems using the love2d framework.
 ## NOTES:
     - This script assumes you are using a linux environment.
 
-## LICENSE
+## LICENSE:
 
   Author: Brandon Burnette 2023
 
